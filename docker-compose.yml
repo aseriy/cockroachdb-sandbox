@@ -8,16 +8,13 @@ services:
     ports:
       - "8080:8080"
       - "26257:26257"
-    # volumes:
-    #   - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/hapropxy
 
 
   roach0:
     container_name: roach0
     image: cockroachdb/cockroach
-    # ports:
-    #   - "8080:8080"
-    #   - "26257:26257"
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach0/data:/data
     command: start --insecure --listen-addr=roach0:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach0:8080 --store=/data
@@ -26,6 +23,8 @@ services:
   roach1:
     container_name: roach1
     image: cockroachdb/cockroach
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach1/data:/data
     command: start --insecure --listen-addr=roach1:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach1:8080 --store=/data
@@ -34,6 +33,8 @@ services:
   roach2:
     container_name: roach2
     image: cockroachdb/cockroach
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach2/data:/data
     command: start --insecure --listen-addr=roach2:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach2:8080 --store=/data
@@ -42,6 +43,8 @@ services:
   roach3:
     container_name: roach3
     image: cockroachdb/cockroach
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach3/data:/data
     command: start --insecure --listen-addr=roach3:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach3:8080 --store=/data
@@ -50,6 +53,8 @@ services:
   roach4:
     container_name: roach4
     image: cockroachdb/cockroach
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach4/data:/data
     command: start --insecure --listen-addr=roach4:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach4:8080 --store=/data
@@ -58,6 +63,8 @@ services:
   roach5:
     container_name: roach5
     image: cockroachdb/cockroach
+    depends_on:
+      - haproxy
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach5/data:/data
     command: start --insecure --listen-addr=roach5:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach5:8080 --store=/data
