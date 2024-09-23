@@ -2,7 +2,10 @@ services:
 
   haproxy:
     container_name: haproxy
-    image: roach-haproxy
+#    image: roach-haproxy
+    build:
+      context: .
+      dockerfile: Dockerfile.haproxy
     depends_on:
       - roach0
       - roach1
@@ -20,7 +23,9 @@ services:
     image: cockroachdb/cockroach
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach0/data:/data
-    command: start --insecure --listen-addr=roach0:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach0:8080 --store=/data
+    ports:
+      - "30000:26257"
+    command: start --insecure --listen-addr=roach0:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach0:8080 --store=/data --locality=region=oltp
     
 
   roach1:
@@ -30,7 +35,9 @@ services:
       - roach0
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach1/data:/data
-    command: start --insecure --listen-addr=roach1:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach1:8080 --store=/data
+    ports:
+      - "30001:26257"
+    command: start --insecure --listen-addr=roach1:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach1:8080 --store=/data --locality=region=oltp
     
 
   roach2:
@@ -40,7 +47,9 @@ services:
       - roach1
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach2/data:/data
-    command: start --insecure --listen-addr=roach2:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach2:8080 --store=/data
+    ports:
+      - "30002:26257"
+    command: start --insecure --listen-addr=roach2:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach2:8080 --store=/data --locality=region=oltp
     
 
   roach3:
@@ -50,7 +59,9 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach3/data:/data
-    command: start --insecure --listen-addr=roach3:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach3:8080 --store=/data
+    ports:
+      - "30003:26257"
+    command: start --insecure --listen-addr=roach3:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach3:8080 --store=/data --locality=region=oltp
     
 
   roach4:
@@ -60,7 +71,9 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach4/data:/data
-    command: start --insecure --listen-addr=roach4:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach4:8080 --store=/data
+    ports:
+      - "30004:26257"
+    command: start --insecure --listen-addr=roach4:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach4:8080 --store=/data --locality=region=oltp
     
 
   roach5:
@@ -70,7 +83,9 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach5/data:/data
-    command: start --insecure --listen-addr=roach5:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach5:8080 --store=/data
+    ports:
+      - "30005:26257"
+    command: start --insecure --listen-addr=roach5:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach5:8080 --store=/data --locality=region=oltp
     
 
   roachinit:
