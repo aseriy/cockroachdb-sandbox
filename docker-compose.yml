@@ -2,7 +2,6 @@ services:
 
   haproxy:
     container_name: haproxy
-#    image: roach-haproxy
     build:
       context: .
       dockerfile: Dockerfile.haproxy
