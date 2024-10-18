@@ -2,19 +2,18 @@ services:
 
   haproxy:
     container_name: haproxy
+    image: localhost:5000/haproxy
     build:
       context: .
       dockerfile: Dockerfile.haproxy
-    depends_on:
-      - roach0
-      - roach1
-      - roach2
-      - roach3
-      - roach4
-      - roach5
     ports:
       - "8080:8080"
       - "26257:26257"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
+
 
 
   roach0:
@@ -22,7 +21,11 @@ services:
     image: cockroachdb/cockroach
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach0/data:/data
-    command: start --insecure --listen-addr=roach0:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach0:8080 --store=/data --locality=region=oltp
+    command: start --insecure --listen-addr=tasks.roach0:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach0:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp
 
 
   roach1:
@@ -32,7 +35,11 @@ services:
       - roach0
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach1/data:/data
-    command: start --insecure --listen-addr=roach1:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach1:8080 --store=/data --locality=region=oltp
+    command: start --insecure --listen-addr=tasks.roach1:26257 --join=tasks.roach0:26257,tasks.roach1:26257,cluster_roach2:26257 --http-addr=tasks.roach1:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
 
 
   roach2:
@@ -42,7 +49,11 @@ services:
       - roach1
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach2/data:/data
-    command: start --insecure --listen-addr=roach2:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach2:8080 --store=/data --locality=region=oltp
+    command: start --insecure --listen-addr=tasks.roach2:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach2:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
 
   roach3:
     container_name: roach3
@@ -51,8 +62,11 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach3/data:/data
-    command: start --insecure --listen-addr=roach3:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach3:8080 --store=/data --locality=region=oltp
-    
+    command: start --insecure --listen-addr=tasks.roach3:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach3:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
 
   roach4:
     container_name: roach4
@@ -61,8 +75,11 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach4/data:/data
-    command: start --insecure --listen-addr=roach4:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach4:8080 --store=/data --locality=region=oltp
-    
+    command: start --insecure --listen-addr=tasks.roach4:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach4:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
 
   roach5:
     container_name: roach5
@@ -71,16 +88,29 @@ services:
       - roach2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach5/data:/data
-    command: start --insecure --listen-addr=roach5:26257 --join=roach0:26257,roach1:26257,roach2:26257 --http-addr=roach5:8080 --store=/data --locality=region=oltp
-    
+    command: start --insecure --listen-addr=tasks.roach5:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach5:8080 --store=/data --locality=region=oltp
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == oltp 
+
+  roach6:
+    image: cockroachdb/cockroach
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/roach6/data:/data
+    command: start --insecure --listen-addr=tasks.roach6:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach6:8080 --store=/data --locality=region=olap
+    deploy:
+      placement:
+        constraints:
+          - node.labels.region == olap
+
 
   roachinit:
-    container_name: roachinit
     image: cockroachdb/cockroach
-    depends_on:
-      - roach0
-      - roach1
-      - roach2
-    restart: "no"
-    command: init --host roach0:26257 --insecure
+    command: init --host tasks.roach0:26257 --insecure
+    deploy:
+      restart_policy:
+        max_attempts: 6
+        delay: 10s
+
 
