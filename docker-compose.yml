@@ -12,7 +12,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.region == oltp 
+          - node.labels.region == centcomm
 
 
 
