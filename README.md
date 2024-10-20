@@ -211,3 +211,52 @@ Net tools aren't installed by default:
 sudo apt install net-tools
 ```
 
+
+
+
+# Mount EFS on EC2
+
+```bash
+apt-get install nfs-common
+```
+
+```bash
+systemctl status nfs-utils
+systemctl restart nfs-utils
+```
+
+```bash
+mount -t nfs4 172.31.27.106:/ /mnt/volumes
+```
+
+
+Docker local registry:
+
+```bash
+docker service create --name registry --publish published=5000,target=5000 --constraint node.labels.region==centcomm registry:2.7
+```
+
+Docker Swarm visualizer:
+
+```bash
+docker run -it -d -p 8000:8080 -v /var/run/docker.sock:/var/run/docker.sock dockersamples/visualizer
+```
+
+Create data storage structure:
+
+```bash
+for i in {0..7}; do mkdir -p heterogeneous/roach${i}/data; done
+```
+
+```bash
+for i in {0..7}; do mkdir -p homogeneous/roach${i}/data; done
+```
+
+
+Database setup
+
+```bash
+CREATE DATABASE oltaptest;
+```
+
+
