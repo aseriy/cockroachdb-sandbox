@@ -5,7 +5,7 @@ import time
 import uuid
 
 
-class Datapoint:
+class DatapointOLAP:
     def __init__(self, args: dict):
         # args is a dict of string passed with the --args flag
         # user passed a yaml/json, in python that's a dict object

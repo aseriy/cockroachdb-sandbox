@@ -1,0 +1,36 @@
+stations:
+- count: 1000
+  sort-by: []
+  columns:
+    id:
+      type: UUIDv4
+      args:
+        seed: 0
+        null_pct: 0
+    region:
+      type: choice
+      args:
+        population:
+          - US East (N. Virginia)
+          - US East (Ohio)
+          - US Central (Iowa)
+          - US Mountain (Utah)
+          - US West (N. California)
+          - US West (Oregon)
+          - EU Central (Frankfurt)
+          - EU West (Ireland)
+          - EU North (Stockholm)
+          - EU South (Milan)
+          - EU West (London)
+          - EU West (Paris)
+          - AP Southeast (Sydney)
+          - AP Southeast (Singapore)
+          - AP South (Mumbai)
+          - AP East (Hong Kong)
+          - AP Northeast (Tokyo)
+          - AP Northeast (Seoul)
+          - South America (São Paulo)
+          - CA Central (Montreal)
+          - Middle East (Bahrain)
+          - Middle East (UAE)
+          - Africa (Cape Town)

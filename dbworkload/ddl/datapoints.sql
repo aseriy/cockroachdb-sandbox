@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS datapoints (
     param3 FLOAT,
     param4 STRING,
     CONSTRAINT "primary" PRIMARY KEY (at ASC, station ASC)
-)
+);
