@@ -259,4 +259,49 @@ Database setup
 CREATE DATABASE oltaptest;
 ```
 
+```bash
+root@localhost:26258/oltaptest> \i dbworkload/ddl/stations.sql
+root@localhost:26258/oltaptest> \i dbworkload/ddl/datapoints.sql 
+```
+
+Confirm there are two regions in the cluster:
+
+```sql
+SHOW REGIONS FROM CLUSTER;
+```
+
+>[!NOTE]
+> A license is needed for the multi-region database.
+
+With the license key, run the following in the SQL shell:
+
+```sql
+SET CLUSTER SETTING cluster.organization = 'EXACT-NAME';
+SET CLUSTER SETTING enterprise.license = 'LICENSE-KEY';
+```
+
+Then set `oltp` as the primary region for the subject DB and add `olap` region as well:
+
+```sql
+ALTER DATABASE oltaptest SET PRIMARY REGION "oltp";
+ALTER DATABASE oltaptest ADD region 'olap';
+```
+
+Set tables' locality:
+
+```sql
+ALTER TABLE stations SET LOCALITY REGIONAL BY TABLE;
+ALTER TABLE datapoints SET LOCALITY REGIONAL BY TABLE;
+```
+
+Populate the `stations` table:
+
+```sql
+IMPORT INTO stations CSV DATA ('http://172.31.24.53:3000/stations.0_0_0.tsv') WITH delimiter = e'\t';
+```
+
+
+```sql
+SHOW ZONE CONFIGURATION FROM DATABASE oltaptest;
+```
 

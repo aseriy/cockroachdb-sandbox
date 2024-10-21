@@ -5,23 +5,13 @@ import time
 import uuid
 
 
-class DatapointOLAP:
+class Datapointolap:
     def __init__(self, args: dict):
         # args is a dict of string passed with the --args flag
         # user passed a yaml/json, in python that's a dict object
+        None
 
-        self.read_pct: float = float(args.get("read_pct", 50) / 100)
 
-        self.lane: str = (
-            random.choice(["ACH", "DEPO", "WIRE"])
-            if not args.get("lane", "")
-            else args["lane"]
-        )
-
-        # you can arbitrarely add any variables you want
-        self.uuid: uuid.UUID = uuid.uuid4()
-        self.ts: dt.datetime = ""
-        self.event: str = ""
 
     # the setup() function is executed only once
     # when a new executing thread is started.

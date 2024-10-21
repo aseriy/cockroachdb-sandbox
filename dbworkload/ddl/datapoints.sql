@@ -10,3 +10,5 @@ CREATE TABLE IF NOT EXISTS datapoints (
     param4 STRING,
     CONSTRAINT "primary" PRIMARY KEY (at ASC, station ASC)
 );
+
+CREATE INDEX ON datapoints (station) STORING (param0, param2);
