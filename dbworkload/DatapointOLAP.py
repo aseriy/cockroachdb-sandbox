@@ -67,7 +67,8 @@ class Datapointolap:
                     )
                     cur.execute(
                         """
-                        SELECT s.region, count(dp.at), min(dp.at), max(dp.at), sum(dp.param0), avg(dp.param2)
+                        SELECT s.region, count(dp.at), min(dp.at), max(dp.at), sum(dp.param0),
+                        round(avg(dp.param2),5)
                         FROM datapoints AS dp JOIN stations AS s ON s.id=dp.station
                         GROUP BY s.region ORDER BY s.region
                         """
@@ -88,15 +89,16 @@ class Datapointolap:
                     cur.execute(
                         """
                         WITH t AS (
-                            SELECT generate_series  (
-                                (SELECT date(min(at)) FROM datapoints)::timestamp,
-                                (SELECT date(max(at)) FROM datapoints)::timestamp+'23 hour',
-                                '1 hour'::interval) :: timestamp AS hr
-                            )    
-                            SELECT t.hr, count(dp.at)
-                            FROM t AS t JOIN datapoints AS dp
-                            ON t.hr >= dp.at AND dp.at < t.hr+'1 hour'
-                            GROUP BY t.hr
+                                SELECT generate_series  (
+                                    (SELECT date(min(at)) FROM datapoints)::timestamp,
+                                    (SELECT date(max(at)) FROM datapoints)::timestamp + '1 day' - '1 hour',
+                                    '1 hour'::interval
+                                ) :: timestamp AS period
+                        )
+                        SELECT t.period, count(dp.at)
+                        FROM t AS t LEFT JOIN datapoints AS dp
+                        ON t.period <= dp.at AND dp.at < t.period +'1 hour'
+                        GROUP BY t.period ORDER BY t.period
                         """
                     )
 
