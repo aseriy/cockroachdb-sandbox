@@ -11,4 +11,6 @@ CREATE TABLE IF NOT EXISTS datapoints (
     CONSTRAINT "primary" PRIMARY KEY (at ASC, station ASC)
 );
 
-CREATE INDEX ON datapoints (station) STORING (param0, param2);
+CREATE INDEX IF NOT EXISTS datapoints_station_storing_rec_idx
+    ON datapoints (station) STORING (param0, param2);
+

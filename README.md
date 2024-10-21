@@ -305,3 +305,24 @@ IMPORT INTO stations CSV DATA ('http://172.31.24.53:3000/stations.0_0_0.tsv') WI
 SHOW ZONE CONFIGURATION FROM DATABASE oltaptest;
 ```
 
+```sql
+SHOW RANGES FROM TABLE datapoints;
+```
+
+
+```sql
+ALTER RANGE default CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER DATABASE system  CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.lease CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER RANGE meta CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER RANGE system CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER RANGE liveness CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.replication_constraint_stats CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.replication_stats CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.statement_statistics CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.transaction_statistics CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.tenant_usage CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.span_stats_tenant_boundaries CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.statement_activity CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+ALTER TABLE system.public.transaction_activity CONFIGURE ZONE USING num_replicas = 3, constraints = '[+region=oltp, -region=olap]';
+```
