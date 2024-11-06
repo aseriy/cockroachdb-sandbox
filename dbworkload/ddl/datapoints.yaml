@@ -1,0 +1,63 @@
+datapoints:
+- count: 10000000
+  sort-by: []
+  columns:
+    at:
+      type: timestamp
+      args:
+        start: "2024-01-01"
+        end: "2024-11-05"
+        format: "%Y-%m-%d %H:%M:%S.%f"
+        seed: 0
+        null_pct: 0
+        array: 0
+
+    station:
+      type: custom
+      args:
+        path: ddl/stations.py
+        my_arg:
+          url: postgresql://root@localhost:26259/oltaptest?sslmode=disable
+
+    param0:
+      type: integer
+      args:
+          min: 0
+          max: 1000
+          seed: 200
+          null_pct: 0
+          array: 0
+    param1:
+      type: integer
+      args:
+          min: -1000
+          max: 1000
+          seed: 0
+          null_pct: 0
+          array: 0
+    param2:
+      type: float
+      args:
+        min: -1000
+        max: 1000
+        round: 3
+        seed: 11
+        null_pct: 0
+        array: 0
+    param3:
+      type: float
+      args:
+        min: -1000
+        max: 1000
+        round: 2
+        seed: 0
+        null_pct: 0
+        array: 0
+    param4:
+      type: string
+      args:
+          min: 8
+          max: 32
+          seed: 54
+          null_pct: 0
+          array: 0
