@@ -1,5 +1,6 @@
 .sandbox/
 volumes
 volumes/
+data/
 *.pyc
 

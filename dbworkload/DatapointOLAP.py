@@ -17,8 +17,6 @@ class Datapointolap:
     # when a new executing thread is started.
     # Also, the function is a vector to receive the excuting threads's unique id and the total thread count
     def setup(self, conn: psycopg.Connection, id: int, total_thread_count: int):
-        conn.set_autocommit(False)
-        print("CONN: ", conn.autocommit)
         with conn.cursor() as cur:
             print(
                 f"My thread ID is {id}. The total count of threads is {total_thread_count}"
@@ -31,77 +29,58 @@ class Datapointolap:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
-                self.sql_count_datapoints,
-                self.sql_stats_by_region,
+                self.sql_stations_by_region,
+                self.sql_datapoints_by_region,
                 self.sql_datapoints_by_hour
             ]
 
 
-    def sql_count_datapoints(self, conn: psycopg.Connection):
-        with conn.transaction() as tx:
-            with conn.cursor() as cur:
-                with conn.transaction():
-                    cur.execute(
-                        """
-                        SET TRANSACTION AS OF SYSTEM TIME follower_read_timestamp()
-                        """
-                    )
-                    cur.execute(
-                        """
-                        SELECT region, COUNT(*) AS s_count FROM stations
-                        GROUP BY region ORDER BY region
-                        """
-                    )
-
-                cur.fetchone()
+    def sql_stations_by_region(self, conn: psycopg.Connection):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT region, COUNT(*) AS s_count FROM stations
+                AS OF SYSTEM TIME follower_read_timestamp()
+                GROUP BY region ORDER BY region
+                """
+            )
+            cur.fetchone()
 
 
-    def sql_stats_by_region(self, conn: psycopg.Connection):
-        with conn.transaction() as tx:
-            with conn.cursor() as cur:
-                with conn.transaction():
-                    cur.execute(
-                        """
-                        SET TRANSACTION AS OF SYSTEM TIME follower_read_timestamp()
-                        """
-                    )
-                    cur.execute(
-                        """
-                        SELECT s.region, count(dp.at), min(dp.at), max(dp.at), sum(dp.param0),
-                        round(avg(dp.param2),5)
-                        FROM datapoints AS dp JOIN stations AS s ON s.id=dp.station
-                        GROUP BY s.region ORDER BY s.region
-                        """
-                    )
 
-                cur.fetchone()
+    def sql_datapoints_by_region(self, conn: psycopg.Connection):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT s.region, count(dp.at), min(dp.at), max(dp.at), sum(dp.param0),
+                round(avg(dp.param2),5)
+                FROM datapoints AS dp JOIN stations AS s ON s.id=dp.station
+                AS OF SYSTEM TIME follower_read_timestamp()
+                GROUP BY s.region ORDER BY s.region
+                """
+            )
+            cur.fetchone()
+
 
 
     def sql_datapoints_by_hour(self, conn: psycopg.Connection):
-        with conn.transaction() as tx:
-            with conn.cursor() as cur:
-                with conn.transaction():
-                    cur.execute(
-                        """
-                        SET TRANSACTION AS OF SYSTEM TIME follower_read_timestamp()
-                        """
-                    )
-                    cur.execute(
-                        """
-                        WITH t AS (
-                                SELECT generate_series  (
-                                    (SELECT date(min(at)) FROM datapoints)::timestamp,
-                                    (SELECT date(max(at)) FROM datapoints)::timestamp + '1 day' - '1 hour',
-                                    '1 hour'::interval
-                                ) :: timestamp AS period
-                        )
-                        SELECT t.period, count(dp.at)
-                        FROM t AS t LEFT JOIN datapoints AS dp
-                        ON t.period <= dp.at AND dp.at < t.period +'1 hour'
-                        GROUP BY t.period ORDER BY t.period
-                        """
-                    )
-
-                cur.fetchone()
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                WITH t AS (
+                    SELECT generate_series  (
+                        (SELECT date(now()))::timestamp - INTERVAL '6 days',
+                        (SELECT date(now()))::timestamp + '1 day' - '1 hour',
+                        '1 hour'::interval
+                    ) :: timestamp AS period
+                )
+                SELECT t.period, count(dp.at)
+                FROM t AS t LEFT JOIN datapoints AS dp
+                ON t.period <= dp.at AND dp.at < t.period +'1 hour'
+                AS OF SYSTEM TIME follower_read_timestamp()
+                GROUP BY t.period ORDER BY t.period
+                """
+            )
+            cur.fetchone()
 
 
