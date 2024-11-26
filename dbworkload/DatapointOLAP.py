@@ -31,7 +31,8 @@ class Datapointolap:
         return [
                 self.sql_stations_by_region,
                 self.sql_datapoints_by_region,
-                self.sql_datapoints_by_hour
+                self.sql_datapoints_today_by_hour,
+                self.sql_datapoints_yesterday_by_hour
             ]
 
 
@@ -63,14 +64,35 @@ class Datapointolap:
 
 
 
-    def sql_datapoints_by_hour(self, conn: psycopg.Connection):
+    def sql_datapoints_today_by_hour(self, conn: psycopg.Connection):
         with conn.cursor() as cur:
             cur.execute(
                 """
                 WITH t AS (
                     SELECT generate_series  (
-                        (SELECT date(now()))::timestamp - INTERVAL '6 days',
+                        (SELECT date(now()))::timestamp,
                         (SELECT date(now()))::timestamp + '1 day' - '1 hour',
+                        '1 hour'::interval
+                    ) :: timestamp AS period
+                )
+                SELECT t.period, count(dp.at)
+                FROM t AS t LEFT JOIN datapoints AS dp
+                ON t.period <= dp.at AND dp.at < t.period +'1 hour'
+                AS OF SYSTEM TIME follower_read_timestamp()
+                GROUP BY t.period ORDER BY t.period
+                """
+            )
+            cur.fetchone()
+
+
+    def sql_datapoints_yesterday_by_hour(self, conn: psycopg.Connection):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                WITH t AS (
+                    SELECT generate_series  (
+                        (SELECT date(now()))::timestamp - INTERVAL '1 day',
+                        (SELECT date(now()))::timestamp - '1 hour',
                         '1 hour'::interval
                     ) :: timestamp AS period
                 )

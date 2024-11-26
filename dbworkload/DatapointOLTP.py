@@ -3,7 +3,7 @@ import psycopg
 import random
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import string
 import json
 
@@ -17,6 +17,10 @@ class Datapointoltp:
             "interval": {
                 "low": 0,
                 "high": 60
+            },
+            "date": {
+                "low": datetime(2024,1,1),
+                "high": datetime(2024,12,31)
             },
             "param0": {
                 "low": 0,
@@ -41,6 +45,19 @@ class Datapointoltp:
                 "high": 32
             }
         }
+
+
+    def random_date(self, d1, d2):
+        retval = None
+        date_range = d2 - d1
+        retval = d1 + timedelta(
+                                    days = random.randint(0, date_range.days),
+                                    hours = random.randint(0, 24),
+                                    minutes = random.randint(0, 60),
+                                    seconds = random.uniform(0, 60)
+                                )
+        return retval.strftime("%Y-%m-%d %H:%M:%S.%f")
+
 
 
 
@@ -82,7 +99,11 @@ class Datapointoltp:
                                     self.init_random_ranges['interval']['high']
                                 ),
                     "station":  str(station_id),
-                    "date":     str(datetime.now()),
+                    # "date":     str(datetime.now()),
+                    "date":     self.random_date(
+                                    self.init_random_ranges['date']['low'],
+                                    self.init_random_ranges['date']['high']
+                                ),
                     "param0":   random.randint(
                                     self.init_random_ranges['param0']['low'],
                                     self.init_random_ranges['param0']['high']

@@ -175,10 +175,10 @@ services:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach7/data:/data
     command: start --insecure --listen-addr=tasks.roach7:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach7:8080 --store=/data --locality=region=olap
     deploy:
-      resources:
-        reservations:
-          cpus: '8'
-          memory: 31G
+      # resources:
+      #   reservations:
+      #     cpus: '8'
+      #     memory: 31G
       placement:
         constraints:
           - node.labels.region == olap

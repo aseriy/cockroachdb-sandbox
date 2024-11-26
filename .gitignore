@@ -3,4 +3,7 @@ volumes
 volumes/
 data/
 *.pyc
+homogeneous/
+heterogeneous/
+RESULTS.md
 

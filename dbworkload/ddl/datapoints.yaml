@@ -6,7 +6,7 @@ datapoints:
       type: timestamp
       args:
         start: "2024-01-01"
-        end: "2024-11-05"
+        end: "2024-12-31"
         format: "%Y-%m-%d %H:%M:%S.%f"
         seed: 0
         null_pct: 0
