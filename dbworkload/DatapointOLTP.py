@@ -99,7 +99,6 @@ class Datapointoltp:
                                     self.init_random_ranges['interval']['high']
                                 ),
                     "station":  str(station_id),
-                    # "date":     str(datetime.now()),
                     "date":     self.random_date(
                                     self.init_random_ranges['date']['low'],
                                     self.init_random_ranges['date']['high']
@@ -129,18 +128,20 @@ class Datapointoltp:
                 }
 
 
-            with conn.cursor() as cur:
-                sql = f"""
-                    UPSERT INTO datapoints
-                        (station, at, param0, param1, param2, param3, param4)
-                        VALUES (
-                            '{datapoint["station"]}', '{datapoint['date']}',
-                            {datapoint['param0']}, {datapoint['param1']}, {datapoint['param2']},
-                            {datapoint['param3']}, '{datapoint["param4"]}'
+                with conn.cursor() as cur:
+                    sql = """
+                        UPSERT INTO datapoints
+                            (station, at, param0, param1, param2, param3, param4)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """
+                    # print(sql)
+                    cur.execute(sql,(
+                            datapoint["station"], datapoint['date'],
+                            datapoint['param0'], datapoint['param1'],
+                            datapoint['param2'], datapoint['param3'],
+                            datapoint["param4"]
                         )
-                """
-                # print(sql)
-                cur.execute(sql)
+                    )
 
 
 

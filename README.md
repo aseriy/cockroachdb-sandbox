@@ -242,6 +242,25 @@ Docker Swarm visualizer:
 docker run -it -d -p 8000:8080 -v /var/run/docker.sock:/var/run/docker.sock dockersamples/visualizer
 ```
 
+
+>[!NOTE]
+> Need to setup a separate Docker Swarm Stack for monitoring (Prometheus, Grafana, etc.)
+
+Grafana (should be run as a docker service)
+
+```bash
+docker run -d -p 3000:3000 --volume /mnt/volumes/grafana:/var/lib/grafana grafana/grafana-enterprise
+```
+
+
+Prometheus
+
+```bash
+docker run -d -p 9090:9090 -v ./grafana:/etc/prometheus -v /mnt/volumes/prometheus:/prometheus prom/prometheus
+```
+
+
+
 Create data storage structure:
 
 ```bash
