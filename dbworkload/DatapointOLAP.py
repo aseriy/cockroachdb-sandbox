@@ -29,6 +29,7 @@ class Datapointolap:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
+                self.sql_full_dump,
                 self.sql_stations_by_region,
                 self.sql_datapoints_by_region,
                 self.sql_datapoints_today_by_hour,
@@ -105,4 +106,19 @@ class Datapointolap:
             )
             cur.fetchone()
 
+
+    def sql_full_dump(self, conn: psycopg.Connection):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    d.at, s.id, s.region,
+                    d.param0, d.param1, d.param2, d.param3, d.param4
+                FROM stations as s JOIN datapoints as d
+                ON s.id=d.station
+                AS OF SYSTEM TIME follower_read_timestamp()
+                ORDER BY d.at
+                """
+            )
+            cur.fetchone()
 

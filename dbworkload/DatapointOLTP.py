@@ -13,6 +13,9 @@ class Datapointoltp:
     def __init__(self, args: dict):
         # args is a dict of string passed with the --args flag
         # user passed a yaml/json, in python that's a dict object
+
+        self.station_id, self.station_date = None, None
+
         self.init_random_ranges = {
             "interval": {
                 "low": 0,
@@ -20,7 +23,7 @@ class Datapointoltp:
             },
             "date": {
                 "low": datetime(2024,1,1),
-                "high": datetime(2024,12,31)
+                "high": datetime(2025,12,31)
             },
             "param0": {
                 "low": 0,
@@ -60,6 +63,42 @@ class Datapointoltp:
 
 
 
+    def create_datapoint(self):
+        station_id = self.station_id
+
+        datapoint = {
+            "interval": random.randint(
+                            self.init_random_ranges['interval']['low'],
+                            self.init_random_ranges['interval']['high']
+                        ),
+            "station":  str(station_id),
+            "date":     self.station_date,
+            "param0":   random.randint(
+                            self.init_random_ranges['param0']['low'],
+                            self.init_random_ranges['param0']['high']
+                        ),
+            "param1":   random.randint(
+                            self.init_random_ranges['param1']['low'],
+                            self.init_random_ranges['param1']['high']
+                        ),
+            "param2":   round(random.uniform(
+                            self.init_random_ranges['param2']['low'],
+                            self.init_random_ranges['param2']['high']
+                        ), self.init_random_ranges['param2']['precision']),
+            "param3":   round(random.uniform(
+                            self.init_random_ranges['param3']['low'],
+                            self.init_random_ranges['param3']['high']
+                        ), self.init_random_ranges['param3']['precision']),
+            "param4":   ''.join(random.choices(
+                            string.ascii_uppercase + string.digits,
+                            k = random.randint(
+                                self.init_random_ranges['param4']['low'],
+                                self.init_random_ranges['param4']['high']
+                            )))
+        }
+        return datapoint
+
+
 
     # the setup() function is executed only once
     # when a new executing thread is started.
@@ -77,71 +116,180 @@ class Datapointoltp:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
-                self.sql_insert_datapoint
+                self.set_station,
+                self.sql_insert_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+
+                self.set_station,
+                self.sql_insert_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+
+                self.set_station,
+                self.sql_insert_datapoint,
+                self.set_station,
+                self.sql_insert_datapoint,
+                
+                self.sql_update_random_datapoint,
+
+                self.sql_delete_random_datapoint,
+
+                self.set_station,
+                self.sql_insert_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint,
+                self.sql_update_last_inserted_datapoint
             ]
 
 
+    def set_station(self, conn: psycopg.Connection):
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM stations ORDER BY random() LIMIT 1"
+            )
+            (station_id, station_region) = cur.fetchone()
+
+            # print(station_id)
+            self.station_id = station_id
+            self.station_date = self.random_date(
+                self.init_random_ranges['date']['low'],
+                self.init_random_ranges['date']['high']
+            )
+
+
     def sql_insert_datapoint(self, conn: psycopg.Connection):
-        datapoint = None
+        datapoint = self.create_datapoint()
+        # print(json.dumps(datapoint, indent=2))
 
-        with conn.transaction() as tx:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT * FROM stations ORDER BY random() LIMIT 1"
+        with conn.cursor() as cur:
+            sql = """
+                UPSERT INTO datapoints
+                    (station, at, param0, param1, param2, param3, param4)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            # print(sql)
+            cur.execute(sql,(
+                    datapoint["station"], datapoint['date'],
+                    datapoint['param0'], datapoint['param1'],
+                    datapoint['param2'], datapoint['param3'],
+                    datapoint["param4"]
                 )
-                (station_id, station_region) = cur.fetchone()
+            )
 
-                # print(station_id)
 
-                datapoint = {
-                    "interval": random.randint(
-                                    self.init_random_ranges['interval']['low'],
-                                    self.init_random_ranges['interval']['high']
-                                ),
-                    "station":  str(station_id),
-                    "date":     self.random_date(
-                                    self.init_random_ranges['date']['low'],
-                                    self.init_random_ranges['date']['high']
-                                ),
-                    "param0":   random.randint(
-                                    self.init_random_ranges['param0']['low'],
-                                    self.init_random_ranges['param0']['high']
-                                ),
-                    "param1":   random.randint(
-                                    self.init_random_ranges['param1']['low'],
-                                    self.init_random_ranges['param1']['high']
-                                ),
-                    "param2":   round(random.uniform(
-                                    self.init_random_ranges['param2']['low'],
-                                    self.init_random_ranges['param2']['high']
-                                ), self.init_random_ranges['param2']['precision']),
-                    "param3":   round(random.uniform(
-                                    self.init_random_ranges['param3']['low'],
-                                    self.init_random_ranges['param3']['high']
-                                ), self.init_random_ranges['param3']['precision']),
-                    "param4":   ''.join(random.choices(
-                                    string.ascii_uppercase + string.digits,
-                                    k = random.randint(
-                                        self.init_random_ranges['param4']['low'],
-                                        self.init_random_ranges['param4']['high']
-                                    )))
-                }
+    def sql_update_last_inserted_datapoint(self, conn: psycopg.Connection):
+        datapoint = self.create_datapoint()
+        # print(json.dumps(datapoint, indent=2))
 
+        with conn.cursor() as cur:
+            sql = """
+                UPDATE datapoints
+                    SET
+                    param0 = %s,
+                    param1 = %s,
+                    param2 = %s,
+                    param3 = %s,
+                    param4 = %s
+                    WHERE station = %s AND at = %s
+            """
+            # print(sql)
+            cur.execute(sql,(
+                    datapoint['param0'], datapoint['param1'],
+                    datapoint['param2'], datapoint['param3'],
+                    datapoint["param4"],
+                    datapoint["station"], datapoint['date']
+                )
+            )
+
+
+    def sql_delete_random_datapoint(self, conn: psycopg.Connection):
+        param0 = random.randint(
+                        self.init_random_ranges['param0']['low'],
+                        self.init_random_ranges['param0']['high']
+                    )
+        # print("param0 = ", param0)
+
+
+        with conn.cursor() as cur:
+            sql = """
+                DELETE FROM datapoints
+                    WHERE at IN (
+                        SELECT at FROM datapoints
+                            WHERE param0 = %s
+                            ORDER BY random() LIMIT 1
+                    )
+            """
+            cur.execute(sql,[param0])
+
+
+
+    def sql_update_random_datapoint(self, conn: psycopg.Connection):
+        # pick a random param0 value
+        param0 = random.randint(
+                        self.init_random_ranges['param0']['low'],
+                        self.init_random_ranges['param0']['high']
+                    )
+
+        with conn.transaction():
+            datapoints_to_update =  []
+
+            with conn.cursor() as cur:
+                sql = """
+                    SELECT at, station
+                    FROM datapoints
+                    WHERE param0 = %s
+                    ORDER BY random() LIMIT 1000
+                """
+                cur.execute(sql,[param0])
+                result = cur.fetchall()
+                for r in result:
+                    datapoints_to_update.append(r)
+
+            for row in datapoints_to_update:
+                at, station = row
+                
+                datapoint = self.create_datapoint()
 
                 with conn.cursor() as cur:
                     sql = """
-                        UPSERT INTO datapoints
-                            (station, at, param0, param1, param2, param3, param4)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        UPDATE datapoints
+                            SET
+                            param0 = %s,
+                            param1 = %s,
+                            param2 = %s,
+                            param3 = %s,
+                            param4 = %s
+                            WHERE station = %s AND at = %s
                     """
-                    # print(sql)
                     cur.execute(sql,(
-                            datapoint["station"], datapoint['date'],
                             datapoint['param0'], datapoint['param1'],
                             datapoint['param2'], datapoint['param3'],
-                            datapoint["param4"]
+                            datapoint["param4"],
+                            station, at
                         )
                     )
-
-
 

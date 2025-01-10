@@ -361,3 +361,52 @@ awk -F, '{ if($3 == "__cycle__" && $4 == 500) print $0}' Datapointoltp.20241119_
 head -1 Datapointolap.20241119_174730.csv > heterogeneous-olap.csv
 awk -F, '{ if($3 == "__cycle__" && $4 == 5) print $0}' Datapointolap.20241119_174730.csv >> heterogeneous-olap.csv
 ```
+
+
+```sql
+CREATE MATERIALIZED VIEW fulldump AS
+SELECT
+  d.at, s.id, s.region,
+  d.param0, d.param1, d.param2, d.param3, d.param4
+  FROM stations as s JOIN datapoints as d
+  ON s.id=d.station
+```
+
+```sql
+SHOW ZONE CONFIGURATION FROM TABLE fulldump;
+```
+
+
+```sql
+SET override_multi_region_zone_config = true;
+ALTER TABLE fulldump CONFIGURE ZONE USING
+  gc.ttlseconds = 300,
+  num_replicas = 1,
+  num_voters = 1,
+  constraints = '[+region=olap]',
+  voter_constraints = '[]',
+  lease_preferences = '[]'; 
+```
+
+```sql
+SHOW RANGES FROM TABLE fulldump;
+```
+
+```sql
+CREATE INDEX ON fulldump(param0);
+CREATE INDEX ON fulldump(at,id);
+CREATE INDEX ON fulldump(param4);
+CREATE INDEX ON fulldump(length(param4));
+CREATE INDEX ON fulldump(length(param4), param4);
+```
+
+
+```sql
+SELECT at,id,param4 FROM fulldump WHERE length(param4)=23 LIMIT 100;
+SELECT COUNT(*) FROM fulldump WHERE length(param4)=23;
+SELECT COUNT(*) FROM fulldump;
+```
+
+```sql
+CREATE INDEX IF NOT EXISTS fulldump_at_id_storing_rec_idx ON oltaptest.public.fulldump (at, id) STORING (region, param0, param1, param2, param3, param4);
+```

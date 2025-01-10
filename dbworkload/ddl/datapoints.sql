@@ -12,7 +12,10 @@ CREATE TABLE IF NOT EXISTS datapoints (
 );
 
 CREATE INDEX IF NOT EXISTS datapoints_station_storing_rec_idx
-    ON datapoints (station) STORING (param0, param2);
+    ON oltaptest.public.datapoints (station) STORING (param0, param1, param2, param3, param4); 
 
-CREATE INDEX datapoints_at ON oltaptest.public.datapoints USING btree (at ASC);
+CREATE INDEX IF NOT EXISTS datapoints_at ON oltaptest.public.datapoints USING btree (at ASC);
+CREATE INDEX IF NOT EXISTS datapoints_param0_rec_idx ON oltaptest.public.datapoints (param0);
+
+
 
