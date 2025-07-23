@@ -29,7 +29,7 @@ class Datapointolap:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
-                self.sql_full_dump,
+                # self.sql_full_dump,
                 self.sql_stations_by_region,
                 self.sql_datapoints_by_region,
                 self.sql_datapoints_today_by_hour,

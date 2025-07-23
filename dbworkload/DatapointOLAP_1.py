@@ -30,6 +30,9 @@ class Datapointolap_1:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
+                self.sql_full_polars,
+                self.sql_full_polars,
+                self.sql_full_polars,
                 self.sql_full_polars
                 # self.sql_full_polars_1
             ]

@@ -26,10 +26,10 @@ if [ ! -d ${LOGDIR} ]; then
   mkdir ${LOGDIR}
 fi
 
-nohup dbworkload run -w ../dbworkload/DatapointOLTP.py \
-    --uri postgresql://root@localhost:${HOMOGENEOUS_PORT}/oltaptest?sslmode=disable \
-    -s -r ${RAMP_TIME} -k 300 \
-    -c ${CONCURRENCY_OLTP} -d ${DURATION} -p 26260 > ${LOGDIR}/homogeneous-oltp.log 2>&1 &
+# nohup dbworkload run -w ../dbworkload/DatapointOLTP.py \
+#     --uri postgresql://root@localhost:${HOMOGENEOUS_PORT}/oltaptest?sslmode=disable \
+#     -s -r ${RAMP_TIME} -k 300 \
+#     -c ${CONCURRENCY_OLTP} -d ${DURATION} -p 26260 > ${LOGDIR}/homogeneous-oltp.log 2>&1 &
 
 # nohup dbworkload run -w ../dbworkload/DatapointOLAP.py \
 #     --uri postgresql://root@localhost:${HOMOGENEOUS_PORT}/oltaptest?sslmode=disable \
