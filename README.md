@@ -278,6 +278,16 @@ SET CLUSTER SETTING cluster.organization = 'EXACT-NAME';
 SET CLUSTER SETTING enterprise.license = 'LICENSE-KEY';
 ```
 
+
+For demos, if it's important to shorten time until a node's declarled `DEAD`:
+
+```sql
+SHOW CLUSTER SETTING server.time_until_store_dead;
+SET CLUSTER SETTING server.time_until_store_dead = '15m0s';
+RESET CLUSTER SETTING server.time_until_store_dead;
+```
+
+
 Then set `oltp` as the primary region for the subject DB and add `olap` region as well:
 
 ```sql
@@ -293,6 +303,11 @@ ALTER TABLE datapoints SET LOCALITY REGIONAL BY TABLE;
 ```
 
 Populate the `stations` table:
+
+```bash
+python3 -m http.server 8000
+```
+
 
 ```sql
 IMPORT INTO stations CSV DATA ('http://172.31.24.53:3000/stations.0_0_0.tsv') WITH delimiter = e'\t';
@@ -400,3 +415,8 @@ SELECT COUNT(*) FROM fulldump;
 ```sql
 CREATE INDEX IF NOT EXISTS fulldump_at_id_storing_rec_idx ON oltaptest.public.fulldump (at, id) STORING (region, param0, param1, param2, param3, param4);
 ```
+
+
+```sql
+SET CLUSTER SETTING kv.rangefeed.enabled = true;
+
