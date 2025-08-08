@@ -419,4 +419,26 @@ CREATE INDEX IF NOT EXISTS fulldump_at_id_storing_rec_idx ON oltaptest.public.fu
 
 ```sql
 SET CLUSTER SETTING kv.rangefeed.enabled = true;
+```
 
+
+```sql
+ALTER TABLE datapoints CONFIGURE ZONE USING
+  range_min_bytes = 134217728,
+  range_max_bytes = 536870912,
+  gc.ttlseconds = 14400,
+  num_replicas = 5,
+  num_voters = 5,
+  constraints = '{+region=one: 1, +region=three: 2, +region=two: 1}',
+  voter_constraints = '{+region=one: 2}',
+  lease_preferences = '[[+region=one]]';
+  ```
+
+```sql
+ALTER TABLE datapoints CONFIGURE ZONE USING
+  num_replicas = 5,
+  num_voters = 5,
+  constraints = '{+region=one: 2, +region=two: 1, +region=three: 2}',
+  voter_constraints = '{+region=one: 2, +region=two: 1, +region=three: 2}',
+  lease_preferences = '[[+region=one]]';
+```
