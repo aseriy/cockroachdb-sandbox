@@ -442,3 +442,53 @@ ALTER TABLE datapoints CONFIGURE ZONE USING
   voter_constraints = '{+region=one: 2, +region=two: 1, +region=three: 2}',
   lease_preferences = '[[+region=one]]';
 ```
+
+
+## Generate Certificates
+
+Generate the CA (Certificate Authority):
+
+```bash
+cockroach cert create-ca --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+```
+
+Generate the node certificate (may need to delete the existing files as `cockroach certs` can't incrementally update):
+
+```bash
+cockroach cert create-node  \
+  roach0 roach1 roach2 roach3 roach4 roach5 roach6 roach7 \
+  tasks.roach0 tasks.roach1 tasks.roach2 tasks.roach3 tasks.roach4 tasks.roach5 tasks.roach6 tasks.roach7 \
+  roach-one-0 roach-one-1 roach-one-2 \
+  roach-two-0 roach-two-1 roach-two-2 \
+  roach-three-0 roach-three-1 roach-three-2 \
+  tasks.roach-one-0 tasks.roach-one-1 tasks.roach-one-2 \
+  tasks.roach-two-0 tasks.roach-two-1 tasks.roach-two-2 \
+  tasks.roach-three-0 tasks.roach-three-1 tasks.roach-three-2 \
+  ec2-3-17-142-130.us-east-2.compute.amazonaws.com \
+  --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+```
+
+Generate the client certificate for user `root`:
+
+```bash
+cockroach cert create-client root --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+```
+
+Log in a `root` to set up a user role:
+
+```bash
+cockroach sql --certs-dir=volumes/certs --host=ec2-3-17-142-130.us-east-2.compute.amazonaws.com --port PORT --user=root
+```
+
+Create an admin user:
+
+```sql
+CREATE USER user WITH PASSWORD 'password';
+GRANT ADMIN TO user;
+```
+
+Create a non-admin user and grant privileges to a specific database:
+
+```sql
+
+```

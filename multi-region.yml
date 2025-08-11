@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.haproxy-multi-region-one
+    command:
+      - roach-one-0
+      - roach-one-1
+      - roach-one-2
     ports:
       - "8081:8080"
       - "26258:26257"
@@ -21,6 +25,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.haproxy-multi-region-two
+    command:
+      - roach-two-0
+      - roach-two-1
+      - roach-two-2
     ports:
       - "8082:8080"
       - "26259:26257"
@@ -37,6 +45,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.haproxy-multi-region-three
+    command:
+      - roach-three-0
+      - roach-three-1
+      - roach-three-2
     ports:
       - "8083:8080"
       - "26260:26257"
@@ -52,8 +64,9 @@ services:
     container_name: roach-one-0
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/0/data:/data
-    command: start --insecure --listen-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
     deploy:
       placement:
         constraints:
@@ -64,8 +77,9 @@ services:
     container_name: roach-one-1
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/1/data:/data
-    command: start --insecure --listen-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
     deploy:
       placement:
         constraints:
@@ -76,8 +90,9 @@ services:
     container_name: roach-one-2
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/2/data:/data
-    command: start --insecure --listen-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
     deploy:
       placement:
         constraints:
@@ -87,6 +102,8 @@ services:
 
   roachinit:
     image: cockroachdb/cockroach
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
     command: init --host tasks.roach-one-0:26257 --insecure
     deploy:
       restart_policy:
@@ -102,8 +119,9 @@ services:
     container_name: roach-two-0
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/0/data:/data
-    command: start --insecure --listen-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
     deploy:
       placement:
         constraints:
@@ -114,8 +132,9 @@ services:
     container_name: roach-two-1
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/1/data:/data
-    command: start --insecure --listen-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
     deploy:
       placement:
         constraints:
@@ -126,8 +145,9 @@ services:
     container_name: roach-two-2
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/2/data:/data
-    command: start --insecure --listen-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
     deploy:
       placement:
         constraints:
@@ -138,8 +158,9 @@ services:
     container_name: roach-three-0
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/0/data:/data
-    command: start --insecure --listen-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
     deploy:
       placement:
         constraints:
@@ -150,8 +171,9 @@ services:
     container_name: roach-three-1
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/1/data:/data
-    command: start --insecure --listen-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
     deploy:
       placement:
         constraints:
@@ -162,8 +184,9 @@ services:
     container_name: roach-three-2
     image: cockroachdb/cockroach
     volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/2/data:/data
-    command: start --insecure --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
     deploy:
       placement:
         constraints:
