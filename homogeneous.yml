@@ -6,15 +6,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.haproxy-homogeneous
+    command:
+      - roach0
+      - roach1
+      - roach2
+      - roach3
+      - roach4
+      - roach5
+      - roach6
+      - roach7
     ports:
       - "8080:8080"
       - "26257:26257"
     deploy:
       restart_policy:
+        max_attempts: 3
         delay: 10s
       placement:
         constraints:
           - node.labels.region == centcomm
+
 
 
   roach0:
@@ -42,7 +53,7 @@ services:
     depends_on:
       - roach0
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/homogeneous/roach1/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach1:26257 --join=tasks.roach0:26257,tasks.roach1:26257,cluster_roach2:26257 --http-addr=tasks.roach1:8080 --store=/data
     deploy:
@@ -132,7 +143,7 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/homogeneous/roach5/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach5:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach5:8080 --store=/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach5:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach5:8080 --store=/data
     deploy:
       # resources:
       #   limits:
@@ -151,7 +162,7 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/homogeneous/roach6/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach6:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach6:8080 --store=/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach6:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach6:8080 --store=/data
     deploy:
       # resources:
       #   limits:
@@ -171,7 +182,7 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/homogeneous/roach7/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach7:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach7:8080 --store=/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach7:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach7:8080 --store=/data
     deploy:
       # resources:
       #   limits:
@@ -188,6 +199,8 @@ services:
 
   roachinit:
     image: cockroachdb/cockroach
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
     command: init --host tasks.roach0:26257 --certs-dir=/cockroach/certs
     deploy:
       restart_policy:
