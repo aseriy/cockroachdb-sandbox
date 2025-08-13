@@ -490,5 +490,22 @@ GRANT ADMIN TO user;
 Create a non-admin user and grant privileges to a specific database:
 
 ```sql
+CREATE USER ocos WITH PASSWORD 'Op3nC0reO5';
 
+-- Allow connecting to the database
+GRANT CONNECT ON DATABASE opencoreos TO ocos;
+
+-- Allow access to the schema
+GRANT USAGE ON SCHEMA public TO ocos;
+
+-- Grant all privileges on existing tables and sequences
+GRANT ALL ON ALL TABLES IN SCHEMA public TO ocos;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO ocos;
+
+-- Ensure future tables and sequences get the same privileges
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL ON TABLES TO ocos;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL ON SEQUENCES TO ocos;
 ```

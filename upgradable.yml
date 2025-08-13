@@ -1,0 +1,213 @@
+services:
+
+  haproxy:
+    container_name: haproxy
+    image: localhost:5000/haproxy_homogeneous
+    build:
+      context: .
+      dockerfile: Dockerfile.haproxy-homogeneous
+    command:
+      - roach0
+      - roach1
+      - roach2
+      - roach3
+      - roach4
+      - roach5
+      - roach6
+      - roach7
+    ports:
+      - "8080:8080"
+      - "26257:26257"
+    deploy:
+      restart_policy:
+        max_attempts: 3
+        delay: 10s
+      placement:
+        constraints:
+          - node.labels.region == centcomm
+
+
+
+  roach0:
+    container_name: roach0
+    image: cockroachdb/cockroach:v23.1.30
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach0/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach0:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach0:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+  roach1:
+    container_name: roach1
+    image: cockroachdb/cockroach:v23.1.30
+    depends_on:
+      - roach0
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach1/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach1:26257 --join=tasks.roach0:26257,tasks.roach1:26257,cluster_roach2:26257 --http-addr=tasks.roach1:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+
+  roach2:
+    container_name: roach2
+    image: cockroachdb/cockroach:v23.1.30
+    depends_on:
+      - roach1
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach2/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach2:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach2:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+
+  roach3:
+    container_name: roach3
+    image: cockroachdb/cockroach:v23.1.30
+    depends_on:
+      - roach2
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach3/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach3:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach3:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+
+  roach4:
+    container_name: roach4
+    image: cockroachdb/cockroach:v23.1.30
+    depends_on:
+      - roach2
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach4/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach4:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach4:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+  roach5:
+    container_name: roach5
+    image: cockroachdb/cockroach:v23.1.30
+    depends_on:
+      - roach2
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach5/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach5:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach5:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+  roach6:
+    image: cockroachdb/cockroach:v23.1.30
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach6/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach6:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach6:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+
+  roach7:
+    image: cockroachdb/cockroach:v23.1.30
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upgradable/roach7/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach7:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach7:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+
+  roachinit:
+    image: cockroachdb/cockroach:v23.1.30
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
+    command: init --host tasks.roach0:26257 --certs-dir=/cockroach/certs
+    deploy:
+      restart_policy:
+        max_attempts: 6
+        delay: 10s
+      placement:
+        constraints:
+          - node.labels.region == centcomm
+
+
