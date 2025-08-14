@@ -1,0 +1,150 @@
+services:
+
+  haproxy:
+    container_name: haproxy
+    image: localhost:5000/haproxy_async
+    build:
+      context: .
+      dockerfile: Dockerfile.haproxy-async
+    command:
+      - standby0
+      - standby1
+      - standby2
+      - standby3
+      - standby4
+    ports:
+      - "8090:8080"
+      - "26290:26257"
+    deploy:
+      restart_policy:
+        max_attempts: 3
+        delay: 10s
+      placement:
+        constraints:
+          - node.labels.region == centcomm
+
+
+
+  standby0:
+    container_name: standby0
+    image: cockroachdb/cockroach
+    volumes:
+      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/async-cluster/standby0/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby0:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby0:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+  standby1:
+    container_name: standby1
+    image: cockroachdb/cockroach
+    depends_on:
+      - standby0
+    volumes:
+      - /mnt/volumes/certs/:/cockroach/certs
+      - /mnt/volumes/async-cluster/standby1/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby1:26257 --join=tasks.standby0:26257,tasks.standby1:26257,cluster_standby2:26257 --http-addr=tasks.standby1:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+
+  standby2:
+    container_name: standby2
+    image: cockroachdb/cockroach
+    depends_on:
+      - standby1
+    volumes:
+      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/async-cluster/standby2/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby2:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby2:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h1
+
+
+  standby3:
+    container_name: standby3
+    image: cockroachdb/cockroach
+    depends_on:
+      - standby2
+    volumes:
+      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/async-cluster/standby3/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby3:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby3:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+  standby4:
+    container_name: standby4
+    image: cockroachdb/cockroach
+    depends_on:
+      - standby2
+    volumes:
+      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/async-cluster/standby4/data:/data
+    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby4:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby4:8080 --store=/data
+    deploy:
+      # resources:
+      #   limits:
+      #     cpus: '2'
+      #     memory: 8G
+      #   reservations:
+      #     cpus: '2'
+      #     memory: 7G
+      placement:
+        constraints:
+          - node.labels.region == h2
+
+
+
+
+  roachinit:
+    image: cockroachdb/cockroach
+    volumes:
+      - /mnt/volumes/certs:/cockroach/certs
+    command: init --host tasks.standby0:26257 --certs-dir=/cockroach/certs
+    deploy:
+      restart_policy:
+        max_attempts: 6
+        delay: 10s
+      placement:
+        constraints:
+          - node.labels.region == centcomm
+
+

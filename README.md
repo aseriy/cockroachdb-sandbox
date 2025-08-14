@@ -464,6 +464,8 @@ cockroach cert create-node  \
   tasks.roach-one-0 tasks.roach-one-1 tasks.roach-one-2 \
   tasks.roach-two-0 tasks.roach-two-1 tasks.roach-two-2 \
   tasks.roach-three-0 tasks.roach-three-1 tasks.roach-three-2 \
+  standby0 standby1 standby2 standby3 standby4 \
+  tasks.standby0 tasks.standby1 tasks.standby2 tasks.standby3 tasks.standby4 \
   ec2-3-17-142-130.us-east-2.compute.amazonaws.com \
   --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
 ```
