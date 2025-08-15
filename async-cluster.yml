@@ -29,7 +29,7 @@ services:
     container_name: standby0
     image: cockroachdb/cockroach
     volumes:
-      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/certs/async-cluster:/cockroach/certs
       - /mnt/volumes/async-cluster/standby0/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby0:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby0:8080 --store=/data
     deploy:
@@ -50,7 +50,7 @@ services:
     depends_on:
       - standby0
     volumes:
-      - /mnt/volumes/certs/:/cockroach/certs
+      - /mnt/volumes/certs/async-cluster/:/cockroach/certs
       - /mnt/volumes/async-cluster/standby1/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby1:26257 --join=tasks.standby0:26257,tasks.standby1:26257,cluster_standby2:26257 --http-addr=tasks.standby1:8080 --store=/data
     deploy:
@@ -72,7 +72,7 @@ services:
     depends_on:
       - standby1
     volumes:
-      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/certs/async-cluster:/cockroach/certs
       - /mnt/volumes/async-cluster/standby2/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby2:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby2:8080 --store=/data
     deploy:
@@ -94,7 +94,7 @@ services:
     depends_on:
       - standby2
     volumes:
-      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/certs/async-cluster:/cockroach/certs
       - /mnt/volumes/async-cluster/standby3/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby3:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby3:8080 --store=/data
     deploy:
@@ -116,7 +116,7 @@ services:
     depends_on:
       - standby2
     volumes:
-      - /mnt/volumes/certs:/cockroach/certs
+      - /mnt/volumes/certs/async-cluster:/cockroach/certs
       - /mnt/volumes/async-cluster/standby4/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.standby4:26257 --join=tasks.standby0:26257,tasks.standby1:26257,tasks.standby2:26257 --http-addr=tasks.standby4:8080 --store=/data
     deploy:
@@ -137,8 +137,8 @@ services:
   roachinit:
     image: cockroachdb/cockroach
     volumes:
-      - /mnt/volumes/certs:/cockroach/certs
-    command: init --host tasks.standby0:26257 --certs-dir=/cockroach/certs
+      - /mnt/volumes/certs/async-cluster:/cockroach/certs
+    command: init --host tasks.standby0:26257 --certs-dir=/cockroach/certs/async-cluster
     deploy:
       restart_policy:
         max_attempts: 6

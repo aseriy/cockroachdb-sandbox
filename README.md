@@ -449,7 +449,20 @@ ALTER TABLE datapoints CONFIGURE ZONE USING
 Generate the CA (Certificate Authority):
 
 ```bash
-cockroach cert create-ca --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+cockroach cert create-ca --certs-dir=volumes/certs/homogeneous --ca-key=volumes/certs/homogeneous/ca.key
+```
+
+```bash
+cockroach cert create-client root --certs-dir=volumes/certs/homogeneous --ca-key=volumes/certs/homogeneous/ca.key
+```
+
+
+```bash
+cockroach cert create-ca --certs-dir=volumes/certs/async-cluster --ca-key=volumes/certs/async-cluster/ca.key
+```
+
+```bash
+cockroach cert create-client root --certs-dir=volumes/certs/async-cluster --ca-key=volumes/certs/async-cluster/ca.key
 ```
 
 Generate the node certificate (may need to delete the existing files as `cockroach certs` can't incrementally update):
@@ -464,16 +477,22 @@ cockroach cert create-node  \
   tasks.roach-one-0 tasks.roach-one-1 tasks.roach-one-2 \
   tasks.roach-two-0 tasks.roach-two-1 tasks.roach-two-2 \
   tasks.roach-three-0 tasks.roach-three-1 tasks.roach-three-2 \
+  ec2-3-17-142-130.us-east-2.compute.amazonaws.com \
+  --certs-dir=volumes/certs/homogeneous --ca-key=volumes/certs/homogeneous/ca.key
+```
+
+```bash
+cockroach cert create-node  \
   standby0 standby1 standby2 standby3 standby4 \
   tasks.standby0 tasks.standby1 tasks.standby2 tasks.standby3 tasks.standby4 \
   ec2-3-17-142-130.us-east-2.compute.amazonaws.com \
-  --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+  --certs-dir=volumes/certs/async-cluster --ca-key=volumes/certs/async-cluster/ca.key
 ```
 
 Generate the client certificate for user `root`:
 
 ```bash
-cockroach cert create-client root --certs-dir=volumes/certs --ca-key=volumes/certs/ca.key
+cockroach cert create-client root --certs-dir=volumes/certs/homogeneous --ca-key=volumes/certs/homogeneous/ca.key
 ```
 
 Log in a `root` to set up a user role:
