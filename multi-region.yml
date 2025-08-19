@@ -1,195 +1,195 @@
-services:
+  services:
 
-  haproxy-one:
-    image: localhost:5000/haproxy_multi_region_one
-    build:
-      context: .
-      dockerfile: Dockerfile.haproxy-multi-region-one
-    command:
-      - roach-one-0
-      - roach-one-1
-      - roach-one-2
-    ports:
-      - "8081:8080"
-      - "26258:26257"
-    deploy:
-      restart_policy:
-        delay: 10s
-      placement:
-        constraints:
-          - node.labels.region == centcomm
-
-
-  haproxy-two:
-    image: localhost:5000/haproxy_multi_region_two
-    build:
-      context: .
-      dockerfile: Dockerfile.haproxy-multi-region-two
-    command:
-      - roach-two-0
-      - roach-two-1
-      - roach-two-2
-    ports:
-      - "8082:8080"
-      - "26259:26257"
-    deploy:
-      restart_policy:
-        delay: 10s
-      placement:
-        constraints:
-          - node.labels.region == centcomm
+    haproxy-one:
+      image: localhost:5000/haproxy_multi_region_one
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy-multi-region-one
+      command:
+        - roach-one-0
+        - roach-one-1
+        - roach-one-2
+      ports:
+        - "8081:8080"
+        - "26258:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
 
 
-  haproxy-three:
-    image: localhost:5000/haproxy_multi_region_three
-    build:
-      context: .
-      dockerfile: Dockerfile.haproxy-multi-region-three
-    command:
-      - roach-three-0
-      - roach-three-1
-      - roach-three-2
-    ports:
-      - "8083:8080"
-      - "26260:26257"
-    deploy:
-      restart_policy:
-        delay: 10s
-      placement:
-        constraints:
-          - node.labels.region == centcomm
+    haproxy-two:
+      image: localhost:5000/haproxy_multi_region_two
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy-multi-region-two
+      command:
+        - roach-two-0
+        - roach-two-1
+        - roach-two-2
+      ports:
+        - "8082:8080"
+        - "26259:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
 
 
-  roach-one-0:
-    container_name: roach-one-0
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/0/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == one
+    haproxy-three:
+      image: localhost:5000/haproxy_multi_region_three
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy-multi-region-three
+      command:
+        - roach-three-0
+        - roach-three-1
+        - roach-three-2
+      ports:
+        - "8083:8080"
+        - "26260:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
 
 
-  roach-one-1:
-    container_name: roach-one-1
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/1/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == one
+    roach-one-0:
+      container_name: roach-one-0
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == one
 
 
-  roach-one-2:
-    container_name: roach-one-2
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/2/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == one
+    roach-one-1:
+      container_name: roach-one-1
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == one
 
 
-
-  roachinit:
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-    command: init --host tasks.roach-one-0:26257 --insecure
-    deploy:
-      restart_policy:
-        max_attempts: 6
-        delay: 10s
-      placement:
-        constraints:
-          - node.labels.region == centcomm
+    roach-one-2:
+      container_name: roach-one-2
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/one/2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == one
 
 
 
-  roach-two-0:
-    container_name: roach-two-0
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/0/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == two
+    roachinit:
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+      command: init --host tasks.roach-one-0:26257 --insecure
+      deploy:
+        restart_policy:
+          max_attempts: 6
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
 
 
-  roach-two-1:
-    container_name: roach-two-1
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/1/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == two
+
+    roach-two-0:
+      container_name: roach-two-0
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == two
 
 
-  roach-two-2:
-    container_name: roach-two-2
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/2/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == two
+    roach-two-1:
+      container_name: roach-two-1
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == two
 
 
-  roach-three-0:
-    container_name: roach-three-0
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/0/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == three
+    roach-two-2:
+      container_name: roach-two-2
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/two/2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == two
 
 
-  roach-three-1:
-    container_name: roach-three-1
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/1/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == three
+    roach-three-0:
+      container_name: roach-three-0
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == three
 
 
-  roach-three-2:
-    container_name: roach-three-2
-    image: cockroachdb/cockroach
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/2/data:/data
-    command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
-    deploy:
-      placement:
-        constraints:
-          - node.labels.multi-region == three
+    roach-three-1:
+      container_name: roach-three-1
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == three
+
+
+    roach-three-2:
+      container_name: roach-three-2
+      image: cockroachdb/cockroach
+      volumes:
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
+        - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/2/data:/data
+      command: start --certs-dir=/cockroach/certs/multi-region --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
+      deploy:
+        placement:
+          constraints:
+            - node.labels.multi-region == three
 
 

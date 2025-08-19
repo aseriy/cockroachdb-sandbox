@@ -501,6 +501,16 @@ Log in a `root` to set up a user role:
 cockroach sql --certs-dir=volumes/certs --host=ec2-3-17-142-130.us-east-2.compute.amazonaws.com --port PORT --user=root
 ```
 
+
+Create the certificates for the multi-region stack:
+
+```bash
+cockroach cert create-ca --certs-dir=volumes/certs/multi-region --ca-key=volumes/certs/multi-region/ca.key
+cockroach cert create-client root --certs-dir=volumes/certs/multi-region --ca-key=volumes/certs/multi-region/ca.key
+cockroach cert create-node  roach-one-0 tasks.roach-one-0 roach-one-1 tasks.roach-one-1 roach-one-2 tasks.roach-one-2 roach-two-0 tasks.roach-two-0 roach-two-1 tasks.roach-two-1 roach-two-2 tasks.roach-two-2 roach-three-0 tasks.roach-three-0 roach-three-1 tasks.roach-three-1 roach-three-2 tasks.roach-three-2 ec2-3-17-142-130.us-east-2.compute.amazonaws.com   --certs-dir=volumes/certs/multi-region --ca-key=volumes/certs/multi-region/ca.key
+```
+
+
 Create an admin user:
 
 ```sql
