@@ -186,7 +186,7 @@
       volumes:
         - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/multi-region:/cockroach/certs
         - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/multi-region/three/2/data:/data
-      command: start --certs-dir=/cockroach/certs/multi-region --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
       deploy:
         placement:
           constraints:

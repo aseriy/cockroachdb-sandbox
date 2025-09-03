@@ -138,7 +138,7 @@ services:
     image: cockroachdb/cockroach
     volumes:
       - /mnt/volumes/certs/async-cluster:/cockroach/certs
-    command: init --host tasks.standby0:26257 --certs-dir=/cockroach/certs/async-cluster
+    command: init --host tasks.standby0:26257 --certs-dir=/cockroach/certs
     deploy:
       restart_policy:
         max_attempts: 6

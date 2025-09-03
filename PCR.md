@@ -35,7 +35,7 @@ SHOW VIRTUAL CLUSTERS;
 Create a replication user and password:
 
 ```sql
-CREATE USER replicator WITH PASSWORD 'R3pli1katR';
+CREATE USER replicator WITH PASSWORD 'R3plikatR';
 ```
 
 Grant the REPLICATIONSOURCE privilege to your user:
