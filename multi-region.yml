@@ -10,8 +10,8 @@
         - roach-one-1
         - roach-one-2
       ports:
-        - "8081:8080"
-        - "26258:26257"
+        - "8082:8080"
+        - "26259:26257"
       deploy:
         restart_policy:
           delay: 10s
@@ -30,8 +30,8 @@
         - roach-two-1
         - roach-two-2
       ports:
-        - "8082:8080"
-        - "26259:26257"
+        - "8083:8080"
+        - "26260:26257"
       deploy:
         restart_policy:
           delay: 10s
@@ -50,8 +50,8 @@
         - roach-three-1
         - roach-three-2
       ports:
-        - "8083:8080"
-        - "26260:26257"
+        - "8084:8080"
+        - "26261:26257"
       deploy:
         restart_policy:
           delay: 10s

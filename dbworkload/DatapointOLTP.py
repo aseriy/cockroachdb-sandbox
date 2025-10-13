@@ -62,6 +62,34 @@ class Datapointoltp:
         return retval.strftime("%Y-%m-%d %H:%M:%S.%f")
 
 
+    def random_string(self, length: int, chars: str) -> str:
+        return ''.join(random.choices(chars, k=length))
+
+
+    def random_json_object(self, depth=1, max_fields=4):
+        obj = {}
+        for _ in range(random.randint(1, max_fields)):
+            key = self.random_string(random.randint(3, 10), string.ascii_lowercase)
+            value_type = random.choice(['str', 'int', 'float', 'bool', 'null', 'nested'])
+
+            if value_type == 'str':
+                value = self.random_string(random.randint(3, 12), string.ascii_letters)
+            elif value_type == 'int':
+                value = random.randint(0, 1000)
+            elif value_type == 'float':
+                value = round(random.uniform(0, 1000), 3)
+            elif value_type == 'bool':
+                value = random.choice([True, False])
+            elif value_type == 'null':
+                value = None
+            elif value_type == 'nested' and depth > 0:
+                value = self.random_json_object(depth=depth-1, max_fields=max_fields)
+            else:
+                value = "unknown"
+
+            obj[key] = value
+        return obj
+
 
     def create_datapoint(self):
         station_id = self.station_id
@@ -94,7 +122,11 @@ class Datapointoltp:
                             k = random.randint(
                                 self.init_random_ranges['param4']['low'],
                                 self.init_random_ranges['param4']['high']
-                            )))
+                            ))),
+            "param5":   json.dumps(self.random_json_object(
+                                        random.randint(1,10),
+                                        random.randint(1,10)
+                                    ))
         }
         return datapoint
 
@@ -213,14 +245,15 @@ class Datapointoltp:
                     param1 = %s,
                     param2 = %s,
                     param3 = %s,
-                    param4 = %s
+                    param4 = %s,
+                    param5 = %s
                     WHERE station = %s AND at = %s
             """
             # print(sql)
             cur.execute(sql,(
                     datapoint['param0'], datapoint['param1'],
                     datapoint['param2'], datapoint['param3'],
-                    datapoint["param4"],
+                    datapoint["param4"], datapoint['param5'],
                     datapoint["station"], datapoint['date']
                 )
             )
@@ -282,13 +315,14 @@ class Datapointoltp:
                             param1 = %s,
                             param2 = %s,
                             param3 = %s,
-                            param4 = %s
+                            param4 = %s,
+                            param5 = %s
                             WHERE station = %s AND at = %s
                     """
                     cur.execute(sql,(
                             datapoint['param0'], datapoint['param1'],
                             datapoint['param2'], datapoint['param3'],
-                            datapoint["param4"],
+                            datapoint["param4"], datapoint['param5'],
                             station, at
                         )
                     )
