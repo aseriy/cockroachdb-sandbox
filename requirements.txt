@@ -3,10 +3,13 @@ colorama==0.4.6
 commonmark==0.9.1
 dbworkload==0.6.5
 Jinja2==3.1.4
+kafka-python==2.1.4
 MarkupSafe==3.0.2
+neo4j==5.28.1
 numpy==1.26.4
 packaging==24.1
 pandas==1.5.3
+parse==1.20.2
 plotext==5.3.2
 plotly==5.24.1
 polars==1.19.0
