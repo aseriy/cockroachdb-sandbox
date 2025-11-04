@@ -47,8 +47,8 @@ services:
     container_name: roach0
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach0/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach0/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach0:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach0:8080 --store=/data --locality=region=read-write
     deploy:
       # resources:
@@ -69,8 +69,8 @@ services:
     depends_on:
       - roach0
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach1/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach1/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach1:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach1:8080 --store=/data --locality=region=read-write
     deploy:
       # resources:
@@ -91,8 +91,8 @@ services:
     depends_on:
       - roach1
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach2/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach2/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach2:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach2:8080 --store=/data --locality=region=read-write
     deploy:
       # resources:
@@ -111,8 +111,8 @@ services:
     container_name: roach3
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach3/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach3/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach3:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach3:8080 --store=/data --locality=region=read-write
     deploy:
       placement:
@@ -124,8 +124,8 @@ services:
     container_name: roach4
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach4/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach4/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach4:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.roach2:26257 --http-addr=tasks.roach4:8080 --store=/data --locality=region=read-write
     deploy:
       placement:
@@ -137,8 +137,8 @@ services:
     container_name: roach5
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach5/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach5/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach5:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach5:8080 --store=/data --locality=region=read-write
     deploy:
       placement:
@@ -149,8 +149,8 @@ services:
   roach6:
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach6/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach6/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach6:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach6:8080 --store=/data --locality=region=read-write
     deploy:
       placement:
@@ -162,8 +162,8 @@ services:
   roach7:
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach7/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach7/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach7:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach7:8080 --store=/data --locality=region=read-write
     deploy:
       placement:
@@ -175,8 +175,8 @@ services:
   roach8:
     image: cockroachdb/cockroach
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/certs/heterogeneous:/cockroach/certs
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/heterogeneous/roach8/data:/data
+      - /mnt/volumes/certs/heterogeneous:/cockroach/certs
+      - /mnt/volumes/heterogeneous/roach8/data:/data
     command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach8:26257 --join=tasks.roach0:26257,tasks.roach1:26257,tasks.oach2:26257 --http-addr=tasks.roach8:8080 --store=/data --locality=region=mostly-read
     deploy:
       placement:
