@@ -66,7 +66,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/one/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-0:26258 --sql-addr=tasks.roach-one-0:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-one-0:8080 --store=/data --locality=region=one
       deploy:
         placement:
           constraints:
@@ -79,7 +79,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/one/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-1:26258 --sql-addr=tasks.roach-one-1:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-one-1:8080 --store=/data --locality=region=one
       deploy:
         placement:
           constraints:
@@ -92,7 +92,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/one/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-one-2:26258 --sql-addr=tasks.roach-one-2:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-one-2:8080 --store=/data --locality=region=one
       deploy:
         placement:
           constraints:
@@ -121,7 +121,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/two/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-0:26258 --sql-addr=tasks.roach-two-0:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-two-0:8080 --store=/data --locality=region=two
       deploy:
         placement:
           constraints:
@@ -134,7 +134,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/two/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-1:26258 --sql-addr=tasks.roach-two-1:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-two-1:8080 --store=/data --locality=region=two
       deploy:
         placement:
           constraints:
@@ -147,7 +147,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/two/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-two-2:26258 --sql-addr=tasks.roach-two-2:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-two-2:8080 --store=/data --locality=region=two
       deploy:
         placement:
           constraints:
@@ -160,7 +160,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/three/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-0:26258 --sql-addr=tasks.roach-three-0:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-three-0:8080 --store=/data --locality=region=three
       deploy:
         placement:
           constraints:
@@ -173,7 +173,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/three/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-1:26258 --sql-addr=tasks.roach-three-1:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-three-1:8080 --store=/data --locality=region=three
       deploy:
         placement:
           constraints:
@@ -186,7 +186,7 @@ services:
       volumes:
         - /mnt/volumes/certs/multi-region:/cockroach/certs
         - /mnt/volumes/multi-region/three/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26257,tasks.roach-one-1:26257,tasks.roach-one-2:26257 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-three-2:26258 --sql-addr=tasks.roach-three-2:26257 --join=tasks.roach-one-0:26258,tasks.roach-one-1:26258,tasks.roach-one-2:26258 --http-addr=tasks.roach-three-2:8080 --store=/data --locality=region=three
       deploy:
         placement:
           constraints:
