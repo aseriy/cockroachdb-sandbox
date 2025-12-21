@@ -37,7 +37,7 @@ services:
           delay: 10s
         placement:
           constraints:
-            - node.labels.region == centcomm
+            - node.labels.region == us-west-2
 
 
     haproxy-three:
@@ -57,7 +57,9 @@ services:
           delay: 10s
         placement:
           constraints:
-            - node.labels.region == centcomm
+            - node.labels.region == eu-central-1
+
+
 
 
     roach-one-0:
@@ -125,7 +127,7 @@ services:
       deploy:
         placement:
           constraints:
-            - node.labels.multi-region == two
+            - node.labels.region == us-west-2
 
 
     roach-two-1:
@@ -138,7 +140,7 @@ services:
       deploy:
         placement:
           constraints:
-            - node.labels.multi-region == two
+            - node.labels.region == us-west-2
 
 
     roach-two-2:
@@ -151,7 +153,7 @@ services:
       deploy:
         placement:
           constraints:
-            - node.labels.multi-region == two
+            - node.labels.region == us-west-2
 
 
     roach-three-0:

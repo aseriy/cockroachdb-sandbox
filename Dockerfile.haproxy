@@ -1,9 +1,14 @@
 FROM haproxy:2.3
 
-RUN apt update
-RUN apt install -y net-tools procps curl wget iproute2 iputils-ping
+ARG HAPROXY_CFG
 
-COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+RUN apt update \
+ && apt install -y net-tools procps curl wget iproute2 iputils-ping
 
-RUN mkdir -p /run/haproxy && chmod 660 /run/haproxy
+COPY ${HAPROXY_CFG} /usr/local/etc/haproxy/haproxy.cfg
+COPY haproxy-run.bash /usr/local/bin/haproxy-run.bash
 
+RUN chmod +x /usr/local/bin/haproxy-run.bash \
+ && mkdir -p /run/haproxy && chmod 660 /run/haproxy
+
+ENTRYPOINT ["/usr/local/bin/haproxy-run.bash"]

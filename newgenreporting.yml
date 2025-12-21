@@ -1,0 +1,153 @@
+services:
+
+    haproxy-tx1:
+      image: localhost:5000/haproxy_ngr_tx1
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy
+        args:
+          HAPROXY_CFG: haproxy-ngr-tx1.cfg
+      command:
+        - {"primary": { "region": "tx1", "nodes": ["0","1","2"] },"backup": [{ "region": "tx2", "nodes": ["0","1","2"] }]}
+
+      ports:
+        - "8082:8080"
+        - "26259:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
+
+
+    haproxy-tx2:
+      image: localhost:5000/haproxy_ngr_tx2
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy-ngr-tx2
+      command:
+        - roach-tx2-0
+        - roach-tx2-1
+        - roach-tx2-2
+      ports:
+        - "8083:8080"
+        - "26260:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
+
+
+    haproxy-tx3:
+      image: localhost:5000/haproxy_ngr_tx3
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy-ngr-tx3
+      command:
+        - roach-tx3-0
+        - roach-tx3-1
+        - roach-tx3-2
+      ports:
+        - "8084:8080"
+        - "26261:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
+
+
+
+
+    roach-tx1-0:
+      container_name: roach-tx1-0
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx1/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-0:26258 --sql-addr=tasks.roach-tx1-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-0:8080 --store=/data --locality=region=one
+
+
+    roach-tx1-1:
+      container_name: roach-tx1-1
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx1/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-1:26258 --sql-addr=tasks.roach-tx1-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-1:8080 --store=/data --locality=region=one
+
+
+    roach-tx1-2:
+      container_name: roach-tx1-2
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx1/2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-2:26258 --sql-addr=tasks.roach-tx1-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-2:8080 --store=/data --locality=region=one
+
+
+    roachinit:
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+      command: init --host tasks.roach-tx1-0:26257
+
+
+
+    roach-tx2-0:
+      container_name: roach-tx2-0
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx2/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-0:26258 --sql-addr=tasks.roach-tx2-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-0:8080 --store=/data --locality=region=two
+
+    
+    roach-tx2-1:
+      container_name: roach-tx2-1
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx2/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-1:26258 --sql-addr=tasks.roach-tx2-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-1:8080 --store=/data --locality=region=two
+
+
+    roach-tx2-2:
+      container_name: roach-tx2-2
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx2/2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-2:26258 --sql-addr=tasks.roach-tx2-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-2:8080 --store=/data --locality=region=two
+
+
+    roach-tx3-0:
+      container_name: roach-tx3-0
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx3/0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-0:26258 --sql-addr=tasks.roach-tx3-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-0:8080 --store=/data --locality=region=three
+
+
+    roach-tx3-1:
+      container_name: roach-tx3-1
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx3/1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-1:26258 --sql-addr=tasks.roach-tx3-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-1:8080 --store=/data --locality=region=three
+
+
+    roach-tx3-2:
+      container_name: roach-tx3-2
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/newgenreporting:/cockroach/certs
+        - /mnt/volumes/newgenreporting/tx3/2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-2:26258 --sql-addr=tasks.roach-tx3-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-2:8080 --store=/data --locality=region=three
+
