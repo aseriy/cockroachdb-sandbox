@@ -48,6 +48,53 @@ HAPROXY_CFG_TMP="haproxy.cfg.tmp"
 printf "%s
 " "$HAPROXY_STATIC_TOP" > "$HAPROXY_CFG_TMP"
 
+# --- listen console (HTTP admin) ---
+cat >> "$HAPROXY_CFG_TMP" <<'EOF'
+
+listen console
+	bind :8080
+	mode tcp
+	balance roundrobin
+EOF
+
+# primary region (console)
+jq -r '
+  .primary as $p |
+  $p.nodes[] |
+  "	server roach-\($p.region)-\(.) tasks.roach-\($p.region)-\(.):8080 check inter 3s fall 3 rise 2"
+' <<< "$1" >> "$HAPROXY_CFG_TMP"
+
+# backup regions (console)
+jq -r '
+  .backup[] as $b |
+  $b.nodes[] |
+  "	server roach-\($b.region)-\(.) tasks.roach-\($b.region)-\(.):8080 check inter 3s fall 3 rise 2 backup"
+' <<< "$1" >> "$HAPROXY_CFG_TMP"
+
+# --- listen roachcluster (CockroachDB SQL) ---
+cat >> "$HAPROXY_CFG_TMP" <<'EOF'
+
+listen roachcluster
+	bind :26257
+	mode tcp
+	option redispatch
+	balance roundrobin
+EOF
+
+# primary region (roachcluster)
+jq -r '
+  .primary as $p |
+  $p.nodes[] |
+  "	server roach-\($p.region)-\(.) tasks.roach-\($p.region)-\(.):26257 check inter 3s fall 3 rise 2"
+' <<< "$1" >> "$HAPROXY_CFG_TMP"
+
+# backup regions (roachcluster)
+jq -r '
+  .backup[] as $b |
+  $b.nodes[] |
+  "	server roach-\($b.region)-\(.) tasks.roach-\($b.region)-\(.):26257 check inter 3s fall 3 rise 2 backup"
+' <<< "$1" >> "$HAPROXY_CFG_TMP"
+
 exit 0
 
 mv "$HAPROXY_CFG_TMP" "$HAPROXY_CFG"

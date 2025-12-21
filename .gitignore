@@ -5,4 +5,5 @@ data/
 *.pyc
 homogeneous/
 heterogeneous/
+haproxy.cfg.tmp
 
