@@ -95,7 +95,7 @@ jq -r '
   "	server roach-\($b.region)-\(.) tasks.roach-\($b.region)-\(.):26257 check inter 3s fall 3 rise 2 backup"
 ' <<< "$1" >> "$HAPROXY_CFG_TMP"
 
-exit 0
+# exit 0
 
 mv "$HAPROXY_CFG_TMP" "$HAPROXY_CFG"
 

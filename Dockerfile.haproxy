@@ -1,11 +1,8 @@
 FROM haproxy:2.3
 
-ARG HAPROXY_CFG
-
 RUN apt update \
- && apt install -y net-tools procps curl wget iproute2 iputils-ping
+ && apt install -y net-tools procps curl wget iproute2 iputils-ping jq
 
-COPY ${HAPROXY_CFG} /usr/local/etc/haproxy/haproxy.cfg
 COPY haproxy-run.bash /usr/local/bin/haproxy-run.bash
 
 RUN chmod +x /usr/local/bin/haproxy-run.bash \
