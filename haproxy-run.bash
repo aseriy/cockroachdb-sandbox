@@ -95,13 +95,22 @@ jq -r '
   "	server roach-\($b.region)-\(.) tasks.roach-\($b.region)-\(.):26257 check inter 3s fall 3 rise 2 backup"
 ' <<< "$1" >> "$HAPROXY_CFG_TMP"
 
+
+NODE_NAMES=$(jq -r '
+  .primary as $p |
+  [ $p ] + (.backup // []) |
+  .[] | .region as $r | .nodes[] |
+  "roach-\($r)-\(.)"
+' <<< "$1")
+
+# echo $NODE_NAMES
 # exit 0
 
 mv "$HAPROXY_CFG_TMP" "$HAPROXY_CFG"
 
 echo "🕓 Waiting for CockroachDB node DNS entries..."
 
-for name in "$@"; do
+for name in $NODE_NAMES; do
   fqdn="tasks.$name"
   until getent hosts "$fqdn" > /dev/null 2>&1; do
     echo "  ⏳ $fqdn not ready..."

@@ -7,10 +7,9 @@ services:
         dockerfile: Dockerfile.haproxy
       command:
         - '{"primary": { "region": "tx1", "nodes": ["0","1","2"] },"backup": [{ "region": "tx2", "nodes": ["0","1","2"] }, { "region": "tx3", "nodes": ["0","1","2"] }]}'
-
       ports:
-        - "8082:8080"
-        - "26259:26257"
+        - "18080:8080"
+        - "36257:26257"
       deploy:
         restart_policy:
           delay: 10s
@@ -27,8 +26,8 @@ services:
       command:
         - '{"primary": { "region": "tx2", "nodes": ["0","1","2"] },"backup": [{ "region": "tx1", "nodes": ["0","1","2"] }, { "region": "tx3", "nodes": ["0","1","2"] }]}'
       ports:
-        - "8083:8080"
-        - "26260:26257"
+        - "28080:8080"
+        - "36258:26257"
       deploy:
         restart_policy:
           delay: 10s
@@ -45,8 +44,8 @@ services:
       command:
         - '{"primary": { "region": "tx3", "nodes": ["0","1","2"] },"backup": [{ "region": "tx1", "nodes": ["0","1","2"] }, { "region": "tx2", "nodes": ["0","1","2"] }]}'
       ports:
-        - "8084:8080"
-        - "26261:26257"
+        - "38080:8080"
+        - "36259:26257"
       deploy:
         restart_policy:
           delay: 10s
@@ -63,7 +62,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx1/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-0:26258 --sql-addr=tasks.roach-tx1-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-0:8080 --store=/data --locality=region=tx1
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-tx1-0:26258 --advertise-sql-addr=tasks.roach-tx1-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx1
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx1-1:
@@ -72,7 +76,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx1/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-1:26258 --sql-addr=tasks.roach-tx1-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-1:8080 --store=/data --locality=region=tx1
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-tx1-1:26258 --advertise-sql-addr=tasks.roach-tx1-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx1
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx1-2:
@@ -81,15 +90,26 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx1/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx1-2:26258 --sql-addr=tasks.roach-tx1-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx1-2:8080 --store=/data --locality=region=tx1
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-tx1-2:26258 --advertise-sql-addr=tasks.roach-tx1-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx1
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roachinit:
       image: cockroachdb/cockroach
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
-      command: init --host tasks.roach-tx1-0:26257
-
+      command: init --certs-dir=/cockroach/certs --host tasks.roach-tx1-0:26257
+      deploy:
+        restart_policy:
+          delay: 10s
+          max_attempts: 6
+        placement:
+          constraints:
+            - node.labels.region == centcomm
 
 
     roach-tx2-0:
@@ -98,7 +118,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx2/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-0:26258 --sql-addr=tasks.roach-tx2-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-0:8080 --store=/data --locality=region=tx2
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-tx2-0:26258 --advertise-sql-addr=tasks.roach-tx2-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx2
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
     
     roach-tx2-1:
@@ -107,7 +132,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx2/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-1:26258 --sql-addr=tasks.roach-tx2-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-1:8080 --store=/data --locality=region=tx2
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080  --advertise-addr=tasks.roach-tx2-1:26258 --advertise-sql-addr=tasks.roach-tx2-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx2
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx2-2:
@@ -116,7 +146,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx2/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx2-2:26258 --sql-addr=tasks.roach-tx2-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx2-2:8080 --store=/data --locality=region=tx2
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080  --advertise-addr=tasks.roach-tx2-2:26258 --advertise-sql-addr=tasks.roach-tx2-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx2
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx3-0:
@@ -125,7 +160,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx3/0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-0:26258 --sql-addr=tasks.roach-tx3-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-0:8080 --store=/data --locality=region=tx3
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080  --advertise-addr=tasks.roach-tx3-0:26258 --advertise-sql-addr=tasks.roach-tx3-0:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx3
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx3-1:
@@ -134,7 +174,12 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx3/1/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-1:26258 --sql-addr=tasks.roach-tx3-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-1:8080 --store=/data --locality=region=tx3
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080  --advertise-addr=tasks.roach-tx3-1:26258 --advertise-sql-addr=tasks.roach-tx3-1:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx3
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
 
     roach-tx3-2:
@@ -143,5 +188,10 @@ services:
       volumes:
         - /mnt/volumes/certs/newgenreporting:/cockroach/certs
         - /mnt/volumes/newgenreporting/tx3/2/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=tasks.roach-tx3-2:26258 --sql-addr=tasks.roach-tx3-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --http-addr=tasks.roach-tx3-2:8080 --store=/data --locality=region=tx3
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-tx3-2:26258 --advertise-sql-addr=tasks.roach-tx3-2:26257 --join=tasks.roach-tx1-0:26258,tasks.roach-tx1-1:26258,tasks.roach-tx1-2:26258 --store=/data --locality=region=tx3
+      deploy:
+        resources:
+          limits:
+            cpus: '4'
+            memory: 8G
 
